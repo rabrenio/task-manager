@@ -2,8 +2,10 @@
   "name": "task-manager",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://rabrenio.github.io/task-manager",
   "dependencies": {
     "bootstrap": "3",
+    "gh-pages": "^1.1.0",
     "lodash": "^4.17.4",
     "node-uuid": "^1.4.8",
     "react": "^16.2.0",
@@ -16,6 +18,8 @@
     "redux": "^3.7.2"
   },
   "scripts": {
+	"predeploy": "npm run build",
+	"deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
