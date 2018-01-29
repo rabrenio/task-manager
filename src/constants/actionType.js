@@ -1,2 +1,12 @@
 export const TASK_ADD = 'task_add'
+export const TASK_UPDATE = 'task_update'
 export const TASK_CHANGE_ORDER = 'task_change_order'
+export const TASK_CHANGE_COLUMN = 'task_change_column'
+export const TASK_ADD_TO_COLUMN = 'task_add_to_column'
+export const TASK_REMOVE_FROM_COLUMN = 'task_remove_from_column'
+export const TASK_TRASH = 'task_trash'
+export const TASK_TRASH_ALL = 'task_trash_all'
+export const TASK_PURGE = 'task_purge'
+
+export const MODAL_OPEN = 'modal_open'
+export const MODAL_CLOSE = 'modal_close'

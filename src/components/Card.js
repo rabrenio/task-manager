@@ -1,18 +1,64 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { findDOMNode } from 'react-dom'
 import { DragSource, DropTarget } from 'react-dnd'
 import _ from 'lodash'
 import { CARD } from '../constants/itemType'
-import { changeCardOrder } from '../actions'
+import { 
+    changeCardOrder, 
+    trashCard, 
+    removeCardFromColumn,
+    openModal
+} from '../actions'
 
 class Card extends Component {
+    static propTypes = {
+        task: PropTypes.object.isRequired,
+        isDragging: PropTypes.bool.isRequired,
+        connectDragSource: PropTypes.func.isRequired,
+        changeCardOrder: PropTypes.func.isRequired,
+        trashCard: PropTypes.func.isRequired,
+    }
+
+    handleTrashCard = () => {
+        const { task, trashCard, removeCardFromColumn } = this.props
+        const { id, columnId } = task
+
+        removeCardFromColumn(id, columnId)
+        trashCard(id)
+    }
+
+    handleOpenModal = () => {
+        this.props.openModal(this.props.task)
+    }
+ 
     render() {
-        const { task, isDragging, connectDragSource, connectDropTarget } = this.props
-        const { label } = task
-        const opacity = isDragging ? 0 : 1
+        const { 
+            task, 
+            isDragging, 
+            connectDragSource, 
+            connectDropTarget, 
+            // trashCard,
+        } = this.props
+
+        const { 
+            color, 
+            label, 
+        } = task
+
         return connectDragSource(connectDropTarget(
-            <div className="card well" style={{opacity}}>{label || 'Story #1'}</div>
+            <div className={`card bg-${color} well`} style={{ opacity: isDragging ? 0 : 1}}>
+                <div className="row">
+                    <div className="card__label">
+                        <p>{label || 'Story #1'}</p>
+                    </div>
+                    <div className="card__options">
+                        <i className="glyphicon glyphicon-edit card__options-btn" onClick={this.handleOpenModal}></i>
+                        <i className="glyphicon glyphicon-remove trash-btn card__options-btn" onClick={this.handleTrashCard}></i>
+                    </div>
+                </div>
+            </div>
         ))
     }
 }
@@ -25,61 +71,42 @@ const cardSource = {
             changeCardOrder: props.changeCardOrder
         }
     },
-    endDrag(props, monitor) {
-        const item = monitor.getItem();
-        const dropResult = monitor.getDropResult();
+    // endDrag(props, monitor) {
+    //     const { id, columnId } = props
+    //     const dropResult = monitor.getDropResult()
 
-        if (dropResult && dropResult.status !== item.status) {
-            // props.removeCard(item.index)
-        }
-    }
+    //     if (dropResult && dropResult.columnId !== columnId) {
+    //         // props.changeCardColumn(id, dropResult.columnId)
+    //     }
+    // }
 }
 
 const cardTarget = {
     hover(props, monitor, component) {
         const item = monitor.getItem()
-        const draggedItemIndex = item.index
-        const hoveredItemIndex = props.index
+        const dragIndex = item.index
+        const dropIndex = props.index
         const columnId = item.task.columnId
 
-        // Don't replace items with themselves
-        if (draggedItemIndex === hoveredItemIndex) {
+        if (dragIndex === dropIndex) {
             return
         }
 
-        // Determine rectangle on screen
         const hoverBoundingRect = findDOMNode(component).getBoundingClientRect()
-
-        // Get vertical middle
         const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-
-        // Determine mouse position
         const clientOffset = monitor.getClientOffset()
-
-        // Get pixels to the top
         const hoverClientY = clientOffset.y - hoverBoundingRect.top
 
-        // Only perform the move when the mouse has crossed half of the items height
-        // When dragging downwards, only move when the cursor is below 50%
-        // When dragging upwards, only move when the cursor is above 50%
-
-        // Dragging downwards
-        if (draggedItemIndex < hoveredItemIndex && hoverClientY < hoverMiddleY) {
+        if (dragIndex < dropIndex && hoverClientY < hoverMiddleY) {
             return
         }
-        // Dragging upwards
-        if (draggedItemIndex > hoveredItemIndex && hoverClientY > hoverMiddleY) {
+        if (dragIndex > dropIndex && hoverClientY > hoverMiddleY) {
             return
         }
 
-        // Time to actually perform the action
         if (props.task.columnId === columnId) {
-            item.changeCardOrder(draggedItemIndex, hoveredItemIndex, columnId)
-            // Note: we're mutating the monitor item here!
-            // Generally it's better to avoid mutations,
-            // but it's good here for the sake of performance
-            // to avoid expensive index searches.
-            monitor.getItem().index = hoveredItemIndex
+            item.changeCardOrder(dragIndex, dropIndex, columnId)
+            monitor.getItem().index = dropIndex
         }
     }
 }
@@ -96,5 +123,13 @@ export default _.flow(
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging()
     })),
-    connect(mapStateToProps, { changeCardOrder })
+    connect(
+        mapStateToProps, 
+        {
+            changeCardOrder, 
+            trashCard, 
+            removeCardFromColumn,
+            openModal,
+        }
+    )
 )(Card)

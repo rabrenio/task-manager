@@ -1,26 +1,39 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { DropTarget } from 'react-dnd'
 import Card from './Card'
 import { CARD } from '../constants/itemType'
 
 class CardContainer extends Component {
+    static propTypes = {
+        label: PropTypes.string,
+        columnId: PropTypes.string.isRequired,
+        addTask: PropTypes.func.isRequired,
+        cards: PropTypes.array.isRequired,
+        connectDropTarget: PropTypes.func.isRequired,
+    }
+
     render() {
         const { label, columnId, addTask, cards, connectDropTarget } = this.props
-        const fakeString = ['foo', 'bar', 'lorem', 'ipsum']
         
         return connectDropTarget(
             <div className="col-sm-4">
-                <div className="card-container">
-                    <div className="card-container__label">
-                        {label} <span className="btn btn-link" onClick={addTask.bind(null, {
+                <div className="card-outer-container">
+                    <div className="card-container">
+                        <div className="card-container__label">
+                            <strong>{label}</strong> 
+                        </div>
+                        <div className="card-container__content">
+                            {cards.map((taskId, index) => <Card key={taskId} index={index} taskId={taskId}/>)}
+                        </div>
+                    </div>
+                    <footer className="card-container-options">
+                        <span className="btn btn-link" onClick={addTask.bind(null, {
                             columnId,
-                            label: fakeString[Math.floor(Math.random() * fakeString.length)],
-                            backgroundColor: 'white',
-                        })}>add tasks</span>
-                    </div>
-                    <div className="card-container__content">
-                        {cards.map((taskId, index) => <Card key={taskId} index={index} taskId={taskId}/>)}
-                    </div>
+                            label: 'Story #1',
+                            color: 'white',
+                        })}>Add card...</span>
+                    </footer>
                 </div>
             </div>
         )
@@ -29,12 +42,33 @@ class CardContainer extends Component {
 
 const cardTarget = {
     drop(props, monitor, component) {
-        // const { id } = props;
-        // const sourceObj = monitor.getItem();
-        // if (id !== sourceObj.listId) component.pushCard(sourceObj.card);
-        // return {
-        //     listId: id
-        // };
+        const { 
+            columnId, 
+            changeCardColumn,
+            addCardToColumn, 
+            removeCardFromColumn 
+        } = props
+        
+        const sourceObj = monitor.getItem()
+
+        if (columnId !== sourceObj.task.columnId) {
+            changeCardColumn(
+                sourceObj.task.id,
+                columnId,
+            )
+            addCardToColumn(
+                sourceObj.task.id, 
+                columnId,
+            )
+            removeCardFromColumn(
+                sourceObj.task.id, 
+                sourceObj.task.columnId,
+            )
+        }
+
+        return {
+            columnId
+        }
     }
 }
 

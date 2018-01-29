@@ -1,4 +1,168 @@
+html,
+body {
+    background-color: rgb(0,122,255);
+}
+h1,h2 {
+    color: #fff;
+    font-size: 24px;
+}
+
+.bg-red {
+    background-color: rgb(255,59,48)!important;
+}
+.bg-green {
+    background-color: rgb(76,217,100)!important;
+}
+.bg-blue {
+    background-color: rgb(0,122,255)!important;
+}
+.bg-yellow {
+    background-color: rgb(255,204,0)!important;
+}
+.btn.bg-blue {
+    border: 0;
+}
+.btn.bg-blue:hover {
+    background-color: rgb(50,122,255);
+}
+.btn.bg-red {
+    color: #fff;
+}
+
+.card-outer-container {
+    background-color: #eee;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
 .card-container {
-    border: 1px solid #ccc;
-    padding: 15px;
+    padding: 15px 15px 0;
+}
+.card-container-options .btn {
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: left;
+}
+.card-container__label {
+    font-size: 16px;
+}
+
+.card {
+    border: 1px solid transparent;
+    background-color: #fff;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    position: relative;
+}
+.card p {
+    margin-bottom: 0;
+}
+.card.bg-white {
+    border: 1px solid #ddd;
+    color: #000!important;
+}
+
+.card__label {
+    margin-right: 55px;
+    word-break: break-all
+}
+.card__options {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: none;
+}
+.card:hover .card__options {
+    display: block;
+}
+
+.card__options-btn {
+    padding: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.card__options-btn:hover {
+    background-color: rgba(0,0,0,0.1);
+}
+
+
+.card-trash__label {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trashbox {
+    background-color: #eee;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 0;
+    min-height: 85px;
+}
+.trashbox .well {
+    margin-bottom: 10px;
+    background-color: #ddd;
+    border: 0;
+    color: #888;
+}
+.trash-btn {
+    margin-left: 5px;
+}
+
+
+.color-selector-btn {
+    border: 0;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+    outline: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.color-selector-btn-group > button:last-child {
+    margin-right: 0;
+}
+
+.modal-content {
+    border: 0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.modal-header {
+    border-bottom: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+.modal-header .close {
+    font-size: 34px;
+    position: absolute;
+    right: 15px;
+    top: 7px;
+    z-index: 3;
+}
+
+@media (min-width: 500px) and (max-width: 767px) {
+    .card-trash {
+        width: 50%;
+        float: left;
+    }
+}
+
+@media (max-width: 767px) {
+    .card-outer-container {
+        margin-bottom: 15px;
+    }
 }
