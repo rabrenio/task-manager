@@ -11,7 +11,10 @@ function didUserVisit() {
             localStorage.setItem('visited', true)
         }
         return visited
-    } catch(err) {}
+    } catch(err) {
+        //if local storage is not supporteed return false always
+        return false
+    }
 }
 
 const initialState = {

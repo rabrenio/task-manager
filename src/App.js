@@ -2,9 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as actionCreators from './actions'
 import { CardContainer, TrashBox, Modal } from './components'
-import { DragDropContext } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
-import _ from 'lodash'
+import { DragDropContext } from 'react-beautiful-dnd'
+
 class App extends Component {
   handleClick = () => {
     const { 
@@ -16,13 +15,41 @@ class App extends Component {
 
     trashAllCards([...backlog, ...inProgress, ...done])
   }
+
+  onDragEnd = (result) => {
+    const { 
+      changeCardColumn, 
+      addCardToColumn, 
+      removeCardFromColumn,
+      changeCardOrder,
+    } = this.props
+
+    if (!result.destination) {
+      return;
+    }
+    
+    if (result.source.droppableId === result.destination.droppableId) {
+      changeCardOrder(result.source.index, result.destination.index, result.destination.droppableId)
+    } else {
+      changeCardColumn(
+          result.draggableId,
+          result.destination.droppableId,
+      )
+      addCardToColumn(
+          result.draggableId,
+          result.destination.droppableId,
+      )
+      removeCardFromColumn(
+          result.draggableId, 
+          result.source.droppableId,
+      )
+    }
+  }
+
   render() {
     const { 
       byId,
       addTask, 
-      changeCardColumn,
-      addCardToColumn, 
-      removeCardFromColumn,
       purgeCards,
       backlog, 
       inProgress, 
@@ -42,39 +69,32 @@ class App extends Component {
             DELETE ALL
             </button>
           </h1>
-        <div className="row">
-          <CardContainer
-            columnId="backlog"
-            label="Backlog" 
-            cards={backlog}
-            addTask={addTask}
-            changeCardColumn={changeCardColumn}
-            addCardToColumn={addCardToColumn}
-            removeCardFromColumn={removeCardFromColumn}
-          />
-          <CardContainer
-            columnId="inProgress"
-            label="In Progress"
-            cards={inProgress}
-            addTask={addTask}
-            changeCardColumn={changeCardColumn}
-            addCardToColumn={addCardToColumn}
-            removeCardFromColumn={removeCardFromColumn}
-          />
-          <CardContainer 
-            columnId="done"
-            label="Done"
-            cards={done}
-            addTask={addTask}
-            changeCardColumn={changeCardColumn}
-            addCardToColumn={addCardToColumn}
-            removeCardFromColumn={removeCardFromColumn}
-          />
-        </div>
-        <TrashBox 
-          cards={trash}
-          purgeCards={purgeCards}
-        />
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <div className="row">
+              <CardContainer
+                columnId="backlog"
+                label="Backlog" 
+                cards={backlog}
+                addTask={addTask}
+              />
+              <CardContainer
+                columnId="inProgress"
+                label="In Progress"
+                cards={inProgress}
+                addTask={addTask}
+              />
+              <CardContainer 
+                columnId="done"
+                label="Done"
+                cards={done}
+                addTask={addTask}
+              />
+            </div>
+            <TrashBox 
+              cards={trash}
+              purgeCards={purgeCards}
+            />
+          </DragDropContext>
         <Modal />
       </div>
     )
@@ -86,7 +106,4 @@ function countTasks(tasks) {
 }
 
 const mapStateToProps = ({ tasks }) => ({ ...tasks })
-export default _.flow(
-  DragDropContext(HTML5Backend), 
-  connect(mapStateToProps, actionCreators)
-)(App)
+export default connect(mapStateToProps, actionCreators)(App)

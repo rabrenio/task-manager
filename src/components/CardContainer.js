@@ -1,79 +1,73 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { DropTarget } from 'react-dnd'
+import { Droppable, Draggable } from 'react-beautiful-dnd'
 import Card from './Card'
-import { CARD } from '../constants/itemType'
 
-class CardContainer extends Component {
+export default class CardContainer extends Component {
     static propTypes = {
         label: PropTypes.string,
         columnId: PropTypes.string.isRequired,
         addTask: PropTypes.func.isRequired,
         cards: PropTypes.array.isRequired,
-        connectDropTarget: PropTypes.func.isRequired,
     }
 
     render() {
-        const { label, columnId, addTask, cards, connectDropTarget } = this.props
+        const { label, columnId, addTask, cards } = this.props
         
-        return connectDropTarget(
-            <div className="col-sm-4">
-                <div className="card-outer-container">
-                    <div className="card-container">
-                        <div className="card-container__label">
-                            <strong>{label}</strong> 
+        return (
+            <Droppable droppableId={columnId}>
+                {(provided, snapshot) => (
+                <div ref={provided.innerRef} className="col-sm-4">
+                    <div className="card-outer-container">
+                        <div className="card-container">
+                            <div className="card-container__label">
+                                <strong>{label}</strong> 
+                            </div>
+                            <div className="card-container__content">
+                                {cards.map((taskId, index) => (
+                                    <Draggable key={taskId} draggableId={taskId} index={index}>
+                                        {(provided, snapshot) => (
+                                        <div>
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                style={getItemStyle(provided.draggableProps.style)}
+                                            >
+                                                <Card taskId={taskId} />
+                                            </div>
+                                            {provided.placeholder}
+                                        </div>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </div>
                         </div>
-                        <div className="card-container__content">
-                            {cards.map((taskId, index) => <Card key={taskId} index={index} taskId={taskId}/>)}
-                        </div>
+                        <footer className="card-container-options">
+                            <span className="btn btn-link" onClick={addTask.bind(null, {
+                                columnId,
+                                label: 'Story #1',
+                                color: 'white',
+                            })}>Add card...</span>
+                        </footer>
                     </div>
-                    <footer className="card-container-options">
-                        <span className="btn btn-link" onClick={addTask.bind(null, {
-                            columnId,
-                            label: 'Story #1',
-                            color: 'white',
-                        })}>Add card...</span>
-                    </footer>
                 </div>
-            </div>
+                )}
+            </Droppable>
         )
     }
 }
 
-const cardTarget = {
-    drop(props, monitor, component) {
-        const { 
-            columnId, 
-            changeCardColumn,
-            addCardToColumn, 
-            removeCardFromColumn 
-        } = props
-        
-        const sourceObj = monitor.getItem()
+const getItemStyle = (draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: 'none',
+  // padding: grid * 2,
+  margin: '0 0 10px 0',
 
-        if (columnId !== sourceObj.task.columnId) {
-            changeCardColumn(
-                sourceObj.task.id,
-                columnId,
-            )
-            addCardToColumn(
-                sourceObj.task.id, 
-                columnId,
-            )
-            removeCardFromColumn(
-                sourceObj.task.id, 
-                sourceObj.task.columnId,
-            )
-        }
+  // change background colour if dragging
+  // background: isDragging ? 'lightgreen' : 'grey',
 
-        return {
-            columnId
-        }
-    }
-}
-
-export default DropTarget(CARD, cardTarget, (connect, monitor) => ({
-    connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver(),
-    canDrop: monitor.canDrop()
-}))(CardContainer)
+  // styles we need to apply on draggables
+  ...draggableStyle,
+});

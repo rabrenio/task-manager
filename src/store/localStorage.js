@@ -1,7 +1,6 @@
 const key = 'task-manager-state'
 
 export const loadState = () => {
-    console.log('load state')
     try {
         const serializedState = localStorage.getItem(key)
         if (serializedState === null) {
