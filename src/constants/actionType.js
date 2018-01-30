@@ -7,6 +7,7 @@ export const TASK_REMOVE_FROM_COLUMN = 'task_remove_from_column'
 export const TASK_TRASH = 'task_trash'
 export const TASK_TRASH_ALL = 'task_trash_all'
 export const TASK_PURGE = 'task_purge'
+export const TASK_RECOVER = 'task_recover'
 
 export const MODAL_OPEN = 'modal_open'
 export const MODAL_CLOSE = 'modal_close'

@@ -1,10 +1,26 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import * as actionCreators from './actions'
 import { CardContainer, TrashBox, Modal } from './components'
 import { DragDropContext } from 'react-beautiful-dnd'
 
 class App extends Component {
+
+  static propTypes = {
+    addTask: PropTypes.func.isRequired,
+    purgeCards: PropTypes.func.isRequired,
+    changeCardColumn: PropTypes.func.isRequired,
+    addCardToColumn: PropTypes.func.isRequired,
+    removeCardFromColumn: PropTypes.func.isRequired,
+    changeCardOrder: PropTypes.func.isRequired,
+    byId: PropTypes.object.isRequired,
+    backlog: PropTypes.array.isRequired,
+    inProgress: PropTypes.array.isRequired,
+    done: PropTypes.array.isRequired,
+    trash: PropTypes.array.isRequired,
+  }
+
   handleClick = () => {
     const { 
       trashAllCards,
@@ -32,23 +48,23 @@ class App extends Component {
       changeCardOrder(result.source.index, result.destination.index, result.destination.droppableId)
     } else {
       changeCardColumn(
-          result.draggableId,
-          result.destination.droppableId,
+        result.draggableId,
+        result.destination.droppableId,
       )
       addCardToColumn(
-          result.draggableId,
-          result.destination.droppableId,
+        result.draggableId,
+        result.destination.index,
+        result.destination.droppableId,
       )
       removeCardFromColumn(
-          result.draggableId, 
-          result.source.droppableId,
+        result.draggableId, 
+        result.source.droppableId,
       )
     }
   }
 
   render() {
     const { 
-      byId,
       addTask, 
       purgeCards,
       backlog, 
@@ -64,7 +80,11 @@ class App extends Component {
           <button 
             className="btn bg-red" 
             onClick={this.handleClick}
-            disabled={countTasks(byId) === 0 ? true : false}
+            disabled={
+              backlog.length === 0 
+              && inProgress.length === 0 
+              && done.length ===0 ? true : false
+            }
           >
             DELETE ALL
             </button>
@@ -99,10 +119,6 @@ class App extends Component {
       </div>
     )
   }
-}
-
-function countTasks(tasks) {
-  return Object.keys(tasks).length
 }
 
 const mapStateToProps = ({ tasks }) => ({ ...tasks })

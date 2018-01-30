@@ -60,14 +60,8 @@ export default class CardContainer extends Component {
 }
 
 const getItemStyle = (draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: 'none',
-  // padding: grid * 2,
-  margin: '0 0 10px 0',
-
-  // change background colour if dragging
-  // background: isDragging ? 'lightgreen' : 'grey',
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
+    //todo: change background color on drag
+    userSelect: 'none',
+    margin: '0 0 10px 0',
+    ...draggableStyle,
 });

@@ -10,12 +10,13 @@ import {
     TASK_TRASH_ALL,
     TASK_PURGE,
     MODAL_OPEN,
-    MODAL_CLOSE
+    MODAL_CLOSE,
+    TASK_RECOVER
 } from '../constants/actionType.js'
 
 export function addTask(payload) {
     return {
-        payload: { ...payload, id: v4() },
+        payload: { id: v4(), ...payload},
         type: TASK_ADD,
     }
 }
@@ -48,10 +49,11 @@ export function changeCardOrder(dragIndex, dropIndex, columnId) {
     }
 }
 
-export function addCardToColumn(id, columnId) {
+export function addCardToColumn(id, dropIndex, columnId) {
     return {
         payload: {
             id,
+            dropIndex,
             columnId,
         },
         type: TASK_ADD_TO_COLUMN,
@@ -86,6 +88,13 @@ export function purgeCards(payload) {
     return {
         payload,
         type: TASK_PURGE,
+    }
+}
+
+export function recoverCard(id) {
+    return {
+        id,
+        type: TASK_RECOVER,
     }
 }
 

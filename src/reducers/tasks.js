@@ -9,7 +9,8 @@ import {
     TASK_REMOVE_FROM_COLUMN,
     TASK_TRASH,
     TASK_TRASH_ALL,
-    TASK_PURGE
+    TASK_PURGE,
+    TASK_RECOVER
 } from '../constants/actionType.js'
 
 function createTaskCollection(name) {
@@ -36,7 +37,11 @@ function createTaskCollection(name) {
                 ]
             }
             case TASK_ADD_TO_COLUMN: {
-                return [...state, action.payload.id]
+                const newState = [...state]
+                const { id, dropIndex } = action.payload
+                newState.splice(dropIndex, 0, id)
+                
+                return newState
             }
             case TASK_REMOVE_FROM_COLUMN: {
                 const newState = [...state]
@@ -58,6 +63,11 @@ const trash = (state = [], action) => {
             return [...state, ...action.payload]
         case TASK_PURGE:
             return []
+        case TASK_RECOVER:
+            const newState = [...state]    
+            const position = newState.indexOf(action.id)
+            newState.splice(position, 1)
+            return newState
         default:
             return state
     }
@@ -66,6 +76,9 @@ const trash = (state = [], action) => {
 const byId = (state = {}, action) => {
     switch (action.type) {
         case TASK_ADD: 
+            if (action.payload.isTrashed) {
+                return state
+            }
             const { id } = action.payload
             return {
                 ...state,
@@ -96,6 +109,16 @@ const byId = (state = {}, action) => {
         }
         case TASK_PURGE: {
             return _.omit(state, action.payload)
+        }
+        case TASK_RECOVER: {
+            const { id } = action
+            return {
+                ...state,
+                [id]: {
+                    ...state[id],
+                    columnId: 'backlog'
+                }
+            }
         }
         default:
             return state
