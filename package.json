@@ -6,7 +6,7 @@
   "dependencies": {
     "bootstrap": "3",
     "gh-pages": "^1.1.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.19",
     "node-uuid": "^1.4.8",
     "react": "^16.2.0",
     "react-beautiful-dnd": "^4.0.1",
